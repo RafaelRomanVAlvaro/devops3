@@ -1,6 +1,7 @@
 package com.napier.devops;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class App {
     // Connection to MySQL database
@@ -16,8 +17,8 @@ public class App {
             System.exit(-1);
         }
 
-        int retries = 10;
-        for (int i = 0; i < retries; ++i) {
+        boolean isConnected = false;
+        while(!isConnected) {
             System.out.println("Connecting to database...");
             try {
                 Thread.sleep(5000);
@@ -33,9 +34,10 @@ public class App {
                 );
 
                 System.out.println("Successfully connected");
+                isConnected = true;
                 break;
             } catch (SQLException sqle) {
-                System.out.println("Failed to connect attempt " + i + ": " + sqle.getMessage());
+                System.out.println("Failed to connect attempt " + sqle.getMessage());
             } catch (InterruptedException ie) {
                 System.out.println("Thread interrupted? Should not happen.");
             }
@@ -95,6 +97,45 @@ public class App {
         }
     }
 
+    /**
+     * Gets all the current employees and salaries.
+     * @return A list of all employees and salaries, or null if there is an error.
+     */
+    public ArrayList<Employee> getAllSalaries()
+    {
+        try
+        {
+            // Create an SQL statement
+            Statement stmt = con.createStatement();
+            // Create string for SQL statement
+            String strSelect =
+                    "SELECT employees.emp_no, employees.first_name, employees.last_name, salaries.salary "
+                            + "FROM employees, salaries "
+                            + "WHERE employees.emp_no = salaries.emp_no AND salaries.to_date = '9999-01-01' "
+                            + "ORDER BY employees.emp_no ASC";
+            // Execute SQL statement
+            ResultSet rset = stmt.executeQuery(strSelect);
+            // Extract employee information
+            ArrayList<Employee> employees = new ArrayList<Employee>();
+            while (rset.next())
+            {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("employees.emp_no");
+                emp.first_name = rset.getString("employees.first_name");
+                emp.last_name = rset.getString("employees.last_name");
+                emp.salary = rset.getInt("salaries.salary");
+                employees.add(emp);
+            }
+            return employees;
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get salary details");
+            return null;
+        }
+    }
+
     public void displayEmployee(Employee emp)
     {
         if (emp != null)
@@ -130,6 +171,12 @@ public class App {
         } else {
             System.out.println("No employee found.");
         }
+
+        // Extract employee salary information
+        ArrayList<Employee> employees = a.getAllSalaries();
+
+        // Test the size of the returned data - should be 240124
+        System.out.println(employees.size());
 
         // Disconnect
         a.disconnect();

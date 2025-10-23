@@ -1,0 +1,34 @@
+@startuml
+
+actor HR as "HR Advisor"
+actor DM as "Department Manager"
+
+rectangle "HR System" {
+
+    ' Group related use cases
+    together {
+        usecase UC1 as "Report: all employee salaries"
+        usecase UC2 as "Report: salaries by department"
+        usecase UC3 as "Report: salaries by role"
+    }
+
+    together {
+        usecase UC4 as "Add employee"
+        usecase UC5 as "View employee"
+        usecase UC6 as "Update employee"
+        usecase UC7 as "Delete employee"
+    }
+
+    HR --> UC1
+    HR --> UC2
+    HR --> UC3
+    HR --> UC4
+    HR --> UC5
+    HR --> UC6
+    HR --> UC7
+
+    DM --> UC2
+    DM --> UC3
+}
+
+@enduml
