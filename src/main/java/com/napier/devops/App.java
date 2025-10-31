@@ -17,27 +17,26 @@ public class App {
             System.exit(-1);
         }
 
-        boolean isConnected = false;
-        while(!isConnected) {
+        int retries = 30;
+        for (int i = 0; i < retries; i++) {
             System.out.println("Connecting to database...");
             try {
                 Thread.sleep(5000);
 
                 // Determine host: use DB_HOST environment variable if available
                 String host = System.getenv("DB_HOST");
-                if (host == null) host = "127.0.0.1"; // default to localhost
+                if (host == null) host = "db"; // IMPORTANT: service name, not localhost
 
                 con = DriverManager.getConnection(
-                        "jdbc:mysql://" + host + ":33060/employees?allowPublicKeyRetrieval=true&useSSL=false",
+                        "jdbc:mysql://" + host + ":3306/employees?allowPublicKeyRetrieval=true&useSSL=false",
                         "root",
                         "example"
                 );
 
                 System.out.println("Successfully connected");
-                isConnected = true;
-                break;
+                return;
             } catch (SQLException sqle) {
-                System.out.println("Failed to connect attempt " + sqle.getMessage());
+                System.out.println("Failed to connect attempt " + i + sqle.getMessage());
             } catch (InterruptedException ie) {
                 System.out.println("Thread interrupted? Should not happen.");
             }
