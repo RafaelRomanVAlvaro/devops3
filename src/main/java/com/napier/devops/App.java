@@ -85,7 +85,6 @@ public class App {
                 emp.title = rset.getString("title");
                 emp.salary = rset.getInt("salary");
                 emp.dept_name = rset.getString("dept_name");
-                emp.manager = rset.getString("manager");
                 return emp;
             } else
                 return null;
@@ -135,6 +134,75 @@ public class App {
         }
     }
 
+    public Department getDepartment(String dept_name) {
+        try {
+            Statement stmt = con.createStatement();
+
+            // Correct SQL with spaces and proper table names
+            String strSelect =
+                    "SELECT d.dept_no, d.dept_name " +
+                            "FROM departments d " +
+                            "WHERE d.dept_name = '" + dept_name + "'";
+
+            ResultSet rset = stmt.executeQuery(strSelect);
+
+            if (rset.next()) {
+                Department dep = new Department();
+                dep.dept_no = rset.getString("dept_no");
+                dep.dept_name = rset.getString("dept_name");
+                return dep;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get department details");
+            return null;
+        }
+    }
+
+    public ArrayList<Employee> getSalariesByDepartment(Department dept) {
+        ArrayList<Employee> employees = new ArrayList<>();
+        try {
+            Statement stmt = con.createStatement();
+
+            String strSelect =
+                    "SELECT e.emp_no, e.first_name, e.last_name, t.title, s.salary " +
+                            "FROM employees e " +
+                            "JOIN dept_emp de ON e.emp_no = de.emp_no " +
+                            "JOIN salaries s ON e.emp_no = s.emp_no " +
+                            "JOIN titles t ON e.emp_no = t.emp_no " +
+                            "WHERE de.dept_no = '" + dept.dept_no + "' " +
+                            "AND s.to_date = '9999-01-01' " + // current salary
+                            "AND t.to_date = '9999-01-01'" // current title
+                            + "ORDER BY e.emp_no ASC";
+
+            ResultSet rset = stmt.executeQuery(strSelect);
+
+            while (rset.next()) {
+                Employee emp = new Employee();
+                emp.emp_no = rset.getInt("emp_no");
+                emp.first_name = rset.getString("first_name");
+                emp.last_name = rset.getString("last_name");
+                emp.title = rset.getString("title");
+                emp.salary = rset.getInt("salary");
+
+                employees.add(emp);
+            }
+
+            return employees;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println("Failed to get salary details");
+            return null;
+        }
+    }
+
+
+
+
+
     public void displayEmployee(Employee emp)
     {
         if (emp != null)
@@ -180,6 +248,22 @@ public class App {
 
         // Display Results
         a.displayEmployee(emp);
+
+        // Get depertment
+        Department dept = a.getDepartment("Sales");
+
+        // Get all employees and their salaries in that department
+        ArrayList<Employee> employees2 = a.getSalariesByDepartment(dept);
+
+        for (Employee e : employees2) {
+            System.out.println(
+                    e.emp_no + " | " +
+                    e.first_name + " " + e.last_name + " | " +
+                    e.title + " | " +
+                    e.salary
+            );
+        }
+
 
         // Display basic info for now
         if (emp != null) {

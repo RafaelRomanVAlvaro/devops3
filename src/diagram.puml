@@ -1,0 +1,49 @@
+@startuml
+' === Classes ===
+
+class Department {
+    + dept_no : String
+    + dept_name : String
+    + manager : Employee
+}
+
+class Employee {
+    + emp_no : int
+    + first_name : String
+    + last_name : String
+    + title : String
+    + salary : int
+    + dept : Department
+    + manager : Employee
+}
+
+class App {
+    - con : Connection
+    - allSalaries : ArrayList<Employee>
+
+    + connect() : void
+    + disconnect() : void
+    + getEmployee(int) : Employee
+    + displayEmployee(e : Employee) : void
+    + getSalariesByTitle(title : String) : ArrayList<Employee>
+    + printSalaries(list : ArrayList<Employee>) : void
+    + getDepartment(dept_name : String) : Department
+    + getSalariesByDepartment(dept : Department) : ArrayList<Employee>
+    + main(args : String[]) : void
+}
+
+' === Relationships ===
+
+' App creates both Employee and Department
+App ..> Employee : <<create>>
+App ..> Department : <<create>>
+
+' Department contains Employees
+Department "1" *-- "1..*" Employee : contains
+
+' Employee belongs to Department
+Employee "1" --> "1" Department : belongs to
+
+' Employee managed by Employee
+Employee "0..1" --> "1" Employee : manager
+@enduml
