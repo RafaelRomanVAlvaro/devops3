@@ -8,7 +8,7 @@ public class App {
     private Connection con = null;
 
     // Connect to the MySQL database
-    public void connect() {
+    public void connect(String location, int delay) {
         try {
             // Load Database driver
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -17,26 +17,21 @@ public class App {
             System.exit(-1);
         }
 
-        int retries = 30;
-        for (int i = 0; i < retries; i++) {
+        int retries = 10;
+        for (int i = 0; i < retries; ++i) {
             System.out.println("Connecting to database...");
             try {
-                Thread.sleep(5000);
-
-                // Determine host: use DB_HOST environment variable if available
-                String host = System.getenv("DB_HOST");
-                if (host == null) host = "db"; // IMPORTANT: service name, not localhost
-
-                con = DriverManager.getConnection(
-                        "jdbc:mysql://" + host + ":3306/employees?allowPublicKeyRetrieval=true&useSSL=false",
-                        "root",
-                        "example"
-                );
-
+                // Wait a bit for db to start
+                Thread.sleep(delay);
+                // Connect to database
+                con = DriverManager.getConnection("jdbc:mysql://" + location
+                                + "/employees?allowPublicKeyRetrieval=true&useSSL=false",
+                        "root", "example");
                 System.out.println("Successfully connected");
-                return;
+                break;
             } catch (SQLException sqle) {
-                System.out.println("Failed to connect attempt " + i + sqle.getMessage());
+                System.out.println("Failed to connect to database attempt " +                                  Integer.toString(i));
+                System.out.println(sqle.getMessage());
             } catch (InterruptedException ie) {
                 System.out.println("Thread interrupted? Should not happen.");
             }
@@ -254,7 +249,14 @@ public class App {
         App a = new App();
 
         // Connect to the database
-        a.connect();
+        if (args.length < 2) {
+            System.out.println("Using default localhost settings");
+            a.connect("localhost:33060", 30000);
+        } else {
+            System.out.println("Using Docker settings: " + args[0] + " Delay: " + args[1]);
+            a.connect(args[0], Integer.parseInt(args[1]));
+        }
+
 
         // Get an employee by ID
         Employee emp = a.getEmployee(10001); // you can change ID if needed

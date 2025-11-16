@@ -37,15 +37,24 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
+                    <!-- This is the new JAR filename -->
+                    <finalName>devops</finalName>
+
                     <archive>
                         <manifest>
+                            <!-- Your main class -->
                             <mainClass>com.napier.devops.App</mainClass>
                         </manifest>
                     </archive>
+
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+
+                    <!-- Prevents "jar-with-dependencies" from being added to the filename -->
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+
                 <executions>
                     <execution>
                         <id>make-assembly</id>

@@ -1,4 +1,12 @@
-FROM eclipse-temurin:17-jdk-jammy
-COPY ./target/seMethods3-0.1.0.4-jar-with-dependencies.jar /tmp
+# Use Amazon Corretto (Java 17) as the base image
+FROM amazoncorretto:17
+
+# Copy your built JAR file into the container
+COPY ./target/devops.jar /tmp
+
+# Set the working directory
 WORKDIR /tmp
-ENTRYPOINT ["java", "-jar", "seMethods3-0.1.0.4-jar-with-dependencies.jar"]
+
+# Run the JAR, passing database host and delay arguments
+ENTRYPOINT ["java", "-jar", "devops.jar", "db:3306", "30000"]
+
