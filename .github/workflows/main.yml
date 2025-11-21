@@ -61,6 +61,13 @@ jobs:
           files: ./target/site/jacoco/jacoco.xml
           flags: integration
           verbose: true
+      - name: Debug secret
+        run: |
+          if [ -z "${{ secrets.CODECOV_TOKEN }}" ]; then 
+            echo "SECRET IS EMPTY"; 
+          else 
+            echo "SECRET EXISTS"; 
+          fi
 
   build:
     name: Build and Start Using docker-compose
