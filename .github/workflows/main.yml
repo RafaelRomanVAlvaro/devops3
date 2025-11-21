@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - lab08
-      - develop
+      - develop    # ← Added so GitHub Actions runs on your branch
 
 jobs:
 
@@ -27,13 +27,6 @@ jobs:
 
       - name: Unit Tests
         run: mvn -Dtest=com.napier.devops.AppTest test
-
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          directory: ./target/site/jacoco
-          flags: unittests
-          verbose: true
 
 
   IntegrationTests:
@@ -61,13 +54,15 @@ jobs:
           docker stop employees
           docker rm employees
           docker image rm database
-
-      - name: Upload Coverage to Codecov
+      - name: CodeCov
         uses: codecov/codecov-action@v2
         with:
+          # token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
           directory: ./target/site/jacoco
-          flags: integrationtests
+          flags: Integration Tests
           verbose: true
+
+
 
 
   build:
