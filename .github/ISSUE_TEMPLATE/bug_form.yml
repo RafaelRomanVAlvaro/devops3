@@ -1,0 +1,41 @@
+name: Bug Report
+description: Report a bug in the HR System
+title: "[BUG]: "
+labels: ["bug"]
+assignees:
+  - RafaelRomanVAlvaro
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! Please provide the details below.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug you found.
+      placeholder: Tell us what you expected and what actually happened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the steps to trigger this bug.
+      placeholder: |
+        1. Go to '...'
+        2. Click '...'
+        3. Scroll down
+        4. Bug happens
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste error messages if any.
+      render: shell
+      placeholder: No logs.
